@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Online Shopping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Shipping Information Form -->
+    <div class="col-lg-7 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h4 class="fw-bold mb-0"><i class="bi bi-truck text-warning me-2"></i>Shipping & Contact Details</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('checkout') }}" id="checkout-form">
+                    <div class="mb-3">
+                        <label for="customer_name" class="form-label fw-semibold">Full Name</label>
+                        <input type="text" class="form-control" id="customer_name" name="customer_name"
+                               value="{{ current_user.name if current_user else '' }}" required placeholder="e.g. Alice Customer">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               value="{{ session.get('email', '') }}" required placeholder="e.g. alice@example.com">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone"
+                               required placeholder="e.g. +1 555-019-2834">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="form-label fw-semibold">Delivery Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3"
+                                  required placeholder="Street address, apartment, city, state, postal code"></textarea>
+                    </div>
+
+                    <div class="alert alert-light border mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-lock-fill text-success fs-4 me-3"></i>
+                            <div>
+                                <strong class="d-block">Payment Method: Cash on Delivery / Demo Checkout</strong>
+                                <small class="text-muted">No real credit card required for this DevOps lab environment.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="place-order-btn" class="btn btn-warning w-100 py-3 fw-bold fs-5 shadow-sm">
+                        <i class="bi bi-check2-circle me-1"></i>Confirm & Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Review Summary -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Order Summary</h5>
+                <a href="{{ url_for('cart_view') }}" class="btn btn-sm btn-outline-secondary">Edit Cart</a>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush mb-3">
+                    {% for item in cart_items %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="my-0 fw-semibold">{{ item.name }}</h6>
+                                <small class="text-muted">Qty: {{ item.quantity }} &times; ${{ "%.2f"|format(item.price) }}</small>
+                            </div>
+                            <span class="text-dark fw-bold">${{ "%.2f"|format(item.subtotal) }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-semibold">${{ "%.2f"|format(total_amount) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Standard Delivery</span>
+                    <span class="text-success fw-semibold">FREE</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="h5 fw-bold mb-0">Total Due</span>
+                    <span class="h4 fw-bold text-primary mb-0" id="checkout-total">${{ "%.2f"|format(total_amount) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

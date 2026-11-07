@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - Online Shopping System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-clock-history text-warning me-2"></i>My Order History</h2>
+        <p class="text-muted mb-0">Track and review all your previous purchases</p>
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-dark">
+        <i class="bi bi-cart me-1"></i>Shop More
+    </a>
+</div>
+
+{% if orders %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="orders-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 120px;">Order ID</th>
+                            <th scope="col">Date Placed</th>
+                            <th scope="col">Recipient</th>
+                            <th scope="col" class="text-center">Items</th>
+                            <th scope="col" class="text-end">Total Amount</th>
+                            <th scope="col" class="text-center" style="width: 150px;">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in orders %}
+                            <tr class="order-row" id="order-row-{{ o.id }}">
+                                <td class="fw-bold text-primary">#{{ o.id }}</td>
+                                <td class="text-muted">{{ o.created_at }}</td>
+                                <td>
+                                    <div class="fw-semibold">{{ o.customer_name }}</div>
+                                    <small class="text-muted">{{ o.email }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">{{ o.item_count }} item(s)</span>
+                                </td>
+                                <td class="text-end fw-bold text-dark">${{ "%.2f"|format(o.total_amount) }}</td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('order_details', order_id=o.id) }}"
+                                       class="btn btn-sm btn-outline-primary"
+                                       id="view-order-btn-{{ o.id }}">
+                                        <i class="bi bi-eye me-1"></i>View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card p-5 text-center shadow-sm border-0 bg-white" id="no-orders-msg">
+        <i class="bi bi-bag-x display-4 text-muted mb-3"></i>
+        <h4>No orders found</h4>
+        <p class="text-muted">You haven't placed any orders yet.</p>
+        <div class="mt-2">
+            <a href="{{ url_for('index') }}" class="btn btn-warning px-4">Browse Catalogue</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

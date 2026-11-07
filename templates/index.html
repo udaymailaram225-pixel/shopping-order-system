@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Product Catalogue - Online Shopping System{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <h2 class="fw-bold mb-1"><i class="bi bi-grid-3x3-gap text-warning me-2"></i>Product Catalogue</h2>
+        <p class="text-muted mb-0">Browse our wide selection of quality products</p>
+    </div>
+    <div class="col-md-6">
+        <form method="GET" action="{{ url_for('index') }}" class="d-flex" id="search-form">
+            <input type="text" name="q" id="search-input" class="form-control me-2 shadow-sm"
+                   placeholder="Search by name, description or category..." value="{{ query }}">
+            {% if category %}
+                <input type="hidden" name="category" value="{{ category }}">
+            {% endif %}
+            <button type="submit" id="search-btn" class="btn btn-warning shadow-sm px-4">
+                <i class="bi bi-search me-1"></i>Search
+            </button>
+            {% if query or category %}
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary ms-2" title="Reset Search">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Category Filters -->
+<div class="mb-4 d-flex flex-wrap gap-2 align-items-center" id="category-filters">
+    <span class="text-muted small fw-semibold me-2"><i class="bi bi-funnel me-1"></i>Categories:</span>
+    <a href="{{ url_for('index', q=query) }}"
+       class="btn btn-sm {{ 'btn-dark' if not category else 'btn-outline-dark' }}">All</a>
+    {% for cat in categories %}
+        <a href="{{ url_for('index', category=cat, q=query) }}"
+           class="btn btn-sm {{ 'btn-dark' if category == cat else 'btn-outline-dark' }}">{{ cat }}</a>
+    {% endfor %}
+</div>
+
+<!-- Products Grid -->
+{% if products %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="products-list">
+        {% for product in products %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm product-card" id="product-card-{{ product.id }}">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-secondary-subtle text-secondary border">{{ product.category }}</span>
+                            {% if product.stock > 5 %}
+                                <span class="badge bg-success" id="product-stock-{{ product.id }}">In Stock ({{ product.stock }})</span>
+                            {% elif product.stock > 0 %}
+                                <span class="badge bg-warning text-dark" id="product-stock-{{ product.id }}">Low Stock ({{ product.stock }})</span>
+                            {% else %}
+                                <span class="badge bg-danger" id="product-stock-{{ product.id }}">Out of Stock</span>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="card-title fw-bold text-dark mt-1" id="product-name-{{ product.id }}">{{ product.name }}</h5>
+                        <p class="card-text text-muted small flex-grow-1" id="product-desc-{{ product.id }}">{{ product.description }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <div>
+                                <small class="text-muted d-block">Price</small>
+                                <span class="h5 fw-bold text-primary mb-0" id="product-price-{{ product.id }}">${{ "%.2f"|format(product.price) }}</span>
+                            </div>
+
+                            {% if current_user and current_user.role == 'admin' %}
+                                <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                            {% else %}
+                                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="m-0">
+                                    <button type="submit"
+                                            class="btn btn-warning btn-sm px-3 shadow-sm add-to-cart-btn"
+                                            id="add-to-cart-btn-{{ product.id }}"
+                                            {% if product.stock <= 0 %}disabled{% endif %}>
+                                        <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card p-5 text-center shadow-sm border-0 bg-white" id="no-products-msg">
+        <i class="bi bi-emoji-neutral display-3 text-muted mb-3"></i>
+        <h4>No products found</h4>
+        <p class="text-muted">Try adjusting your search criteria or filter to find what you are looking for.</p>
+        <div class="mt-2">
+            <a href="{{ url_for('index') }}" class="btn btn-warning px-4">View All Products</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

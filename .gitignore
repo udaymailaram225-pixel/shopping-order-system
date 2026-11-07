@@ -1,0 +1,25 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database (can be seeded on startup)
+*.db
+*.sqlite3
+
+# Environment and virtual environments
+.env
+venv/
+env/
+ENV/
+
+# Selenium / ChromeDriver / Test artifacts
+*.log
+geckodriver.log
+chromedriver.log
+.pytest_cache/
+
+# IDE / Editor folders
+.vscode/
+.idea/
+*.swp

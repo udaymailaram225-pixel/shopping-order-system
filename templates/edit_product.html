@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product - Admin - Online Shopping System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold mb-0">
+                <i class="bi bi-pencil-square text-warning me-2"></i>Edit Product #{{ product.id }}
+            </h3>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Admin Dashboard
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="{{ url_for('edit_product', product_id=product.id) }}" id="edit-product-form">
+                    <div class="mb-3">
+                        <label for="product-name" class="form-label fw-semibold">Product Name</label>
+                        <input type="text" class="form-control" id="product-name" name="name"
+                               value="{{ product.name }}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="product-category" class="form-label fw-semibold">Category</label>
+                            <input type="text" class="form-control" id="product-category" name="category"
+                                   value="{{ product.category }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="product-price" class="form-label fw-semibold">Price ($)</label>
+                            <input type="number" step="0.01" min="0.01" class="form-control" id="product-price" name="price"
+                                   value="{{ product.price }}" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="product-stock" class="form-label fw-semibold">Stock Quantity</label>
+                            <input type="number" min="0" class="form-control" id="product-stock" name="stock"
+                                   value="{{ product.stock }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="product-description" class="form-label fw-semibold">Product Description</label>
+                        <textarea class="form-control" id="product-description" name="description" rows="4" required>{{ product.description }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-light px-4">Cancel</a>
+                        <button type="submit" id="save-product-btn" class="btn btn-warning px-4 fw-bold shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i>Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

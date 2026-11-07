@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Online Shopping System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold mb-0"><i class="bi bi-cart3 text-warning me-2"></i>Your Shopping Cart</h4>
+                <span class="badge bg-secondary">{{ cart_items|length }} Unique Item(s)</span>
+            </div>
+            <div class="card-body p-0">
+                {% if cart_items %}
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="cart-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="min-width: 200px;">Product</th>
+                                    <th scope="col" class="text-center" style="width: 120px;">Price</th>
+                                    <th scope="col" class="text-center" style="width: 170px;">Quantity</th>
+                                    <th scope="col" class="text-end" style="width: 120px;">Subtotal</th>
+                                    <th scope="col" class="text-center" style="width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                    <tr id="cart-row-{{ item.id }}">
+                                        <td>
+                                            <div class="fw-bold" id="cart-item-name-{{ item.id }}">{{ item.name }}</div>
+                                            <small class="text-muted">{{ item.category }} | Stock: {{ item.stock }}</small>
+                                        </td>
+                                        <td class="text-center" id="cart-item-price-{{ item.id }}">${{ "%.2f"|format(item.price) }}</td>
+                                        <td>
+                                            <form action="{{ url_for('update_cart', product_id=item.id) }}" method="POST" class="d-flex align-items-center justify-content-center">
+                                                <input type="number" name="quantity" id="cart-qty-{{ item.id }}"
+                                                       class="form-control form-control-sm text-center me-1"
+                                                       value="{{ item.quantity }}" min="1" max="{{ item.stock }}" style="max-width: 65px;">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" id="update-cart-btn-{{ item.id }}" title="Update quantity">
+                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="text-end fw-bold text-dark" id="cart-item-subtotal-{{ item.id }}">
+                                            ${{ "%.2f"|format(item.subtotal) }}
+                                        </td>
+                                        <td class="text-center">
+                                            <form action="{{ url_for('remove_from_cart', product_id=item.id) }}" method="POST" class="m-0">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" id="remove-cart-btn-{{ item.id }}" title="Remove item">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center p-5" id="empty-cart-msg">
+                        <i class="bi bi-cart-x display-4 text-muted mb-3"></i>
+                        <h5>Your cart is currently empty</h5>
+                        <p class="text-muted small">Looks like you haven't added anything to your cart yet.</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-warning mt-2">
+                            <i class="bi bi-arrow-left me-1"></i>Start Shopping
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Total Items</span>
+                    <span class="fw-semibold">{{ cart_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Shipping</span>
+                    <span class="text-success fw-semibold">FREE</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="h5 fw-bold mb-0">Total Amount</span>
+                    <span class="h4 fw-bold text-primary mb-0" id="cart-total">${{ "%.2f"|format(total_amount) }}</span>
+                </div>
+
+                {% if cart_items %}
+                    <a href="{{ url_for('checkout') }}" class="btn btn-warning w-100 py-2 fw-bold shadow-sm" id="checkout-btn">
+                        Proceed to Checkout <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary w-100 py-2 fw-bold" disabled id="checkout-btn-disabled">
+                        Cart is Empty
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
